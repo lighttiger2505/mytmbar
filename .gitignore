@@ -33,3 +33,6 @@ go.work.sum
 
 # Golang
 mytmbar
+
+# Claude Code
+.claude/settings.local.json
