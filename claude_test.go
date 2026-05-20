@@ -8,12 +8,12 @@ func TestClaudeStatusEmoji(t *testing.T) {
 		status ClaudeStatus
 		want   string
 	}{
-		{"running", ClaudeStatus{State: claudeStateRunning}, "🏃"},
-		{"idle", ClaudeStatus{State: claudeStateIdle}, "⌛ "},
-		{"waiting", ClaudeStatus{State: claudeStateWaiting}, "🚧"},
-		{"plan mode idle", ClaudeStatus{Mode: claudeModePlan, State: claudeStateIdle}, "📋"},
-		{"accept edits running", ClaudeStatus{Mode: claudeModeAccept, State: claudeStateRunning}, "✏️"},
-		{"unknown", ClaudeStatus{State: claudeStateUnknown}, "❓"},
+		{"running", ClaudeStatus{State: ClaudeStateRunning}, "🏃"},
+		{"idle", ClaudeStatus{State: ClaudeStateIdle}, "⌛ "},
+		{"waiting", ClaudeStatus{State: ClaudeStateWaiting}, "🚧"},
+		{"plan mode idle", ClaudeStatus{Mode: ClaudeModePlan, State: ClaudeStateIdle}, "📋"},
+		{"accept edits running", ClaudeStatus{Mode: ClaudeModeAccept, State: ClaudeStateRunning}, "✏️"},
+		{"unknown", ClaudeStatus{State: ClaudeStateUnknown}, "❓"},
 		{"empty", ClaudeStatus{}, "❓"},
 	}
 
@@ -31,8 +31,8 @@ func TestParseClaudeStatus(t *testing.T) {
 	tests := []struct {
 		name      string
 		content   string
-		wantState string
-		wantMode  string
+		wantState ClaudeState
+		wantMode  ClaudeMode
 	}{
 		{
 			name: "Idle with prompt only",
@@ -40,7 +40,7 @@ func TestParseClaudeStatus(t *testing.T) {
 ───────────────────────────────────────
 ❯
 ───────────────────────────────────────`,
-			wantState: claudeStateIdle,
+			wantState: ClaudeStateIdle,
 		},
 		{
 			name: "Idle with completion suggestion",
@@ -48,19 +48,19 @@ func TestParseClaudeStatus(t *testing.T) {
 ───────────────────────────────────────
 ❯ Try "edit file.go to..."
 ───────────────────────────────────────`,
-			wantState: claudeStateIdle,
+			wantState: ClaudeStateIdle,
 		},
 		{
 			name: "Running with Clauding",
 			content: `Some output
 ✢ Clauding… (esc to interrupt · 1m 45s · ↓ 1.2k tokens)`,
-			wantState: claudeStateRunning,
+			wantState: ClaudeStateRunning,
 		},
 		{
 			name: "Running with time first format",
 			content: `Some output
 ✢ Reticulating… (1m 52s · ↓ 11.5k tokens · thought for 7s)`,
-			wantState: claudeStateRunning,
+			wantState: ClaudeStateRunning,
 		},
 		{
 			name: "Running with esc to interrupt at end of status line",
@@ -70,25 +70,25 @@ func TestParseClaudeStatus(t *testing.T) {
 ❯
 ───────────────────────────────────────
   4 files +20 -0 · esc to interrupt`,
-			wantState: claudeStateRunning,
+			wantState: ClaudeStateRunning,
 		},
 		{
 			name: "Running fallback (ctrl+c to interrupt)",
 			content: `Some output
 ✻ Thinking… (ctrl+c to interrupt)`,
-			wantState: claudeStateRunning,
+			wantState: ClaudeStateRunning,
 		},
 		{
 			name: "Running fallback (esc to interrupt)",
 			content: `Some output
 ✻ Processing… (esc to interrupt)`,
-			wantState: claudeStateRunning,
+			wantState: ClaudeStateRunning,
 		},
 		{
 			name: "Not Running when text mentions esc to interrupt in quotes",
 			content: `Some output about "esc to interrupt" in quotes
 ❯ `,
-			wantState: claudeStateIdle,
+			wantState: ClaudeStateIdle,
 		},
 		{
 			name: "Not Running when indented status line (quoted text)",
@@ -100,20 +100,20 @@ func TestParseClaudeStatus(t *testing.T) {
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ❯
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────`,
-			wantState: claudeStateIdle,
+			wantState: ClaudeStateIdle,
 		},
 		{
 			name: "Waiting with permission prompt",
 			content: `Some output
 Yes, allow once
 Yes, allow always`,
-			wantState: claudeStateWaiting,
+			wantState: ClaudeStateWaiting,
 		},
 		{
 			name: "Waiting with confirmation prompt",
 			content: `Some output
 Continue? (Y/n)`,
-			wantState: claudeStateWaiting,
+			wantState: ClaudeStateWaiting,
 		},
 		{
 			name: "Idle after task completion",
@@ -121,7 +121,7 @@ Continue? (Y/n)`,
 ✻ Cooked for 43s
 ───────────────────────────────────────
 ❯ `,
-			wantState: claudeStateIdle,
+			wantState: ClaudeStateIdle,
 		},
 		{
 			name: "Idle after task completion with file changes",
@@ -131,7 +131,7 @@ Continue? (Y/n)`,
 ❯
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   4 files +73 -3`,
-			wantState: claudeStateIdle,
+			wantState: ClaudeStateIdle,
 		},
 		{
 			name: "Idle with plan mode",
@@ -140,8 +140,8 @@ Continue? (Y/n)`,
 ───────────────────────────────────────
 ❯
 ───────────────────────────────────────`,
-			wantState: claudeStateIdle,
-			wantMode:  claudeModePlan,
+			wantState: ClaudeStateIdle,
+			wantMode:  ClaudeModePlan,
 		},
 		{
 			name: "Idle with accept edits",
@@ -150,8 +150,8 @@ Continue? (Y/n)`,
 ───────────────────────────────────────
 ❯
 ───────────────────────────────────────`,
-			wantState: claudeStateIdle,
-			wantMode:  claudeModeAccept,
+			wantState: ClaudeStateIdle,
+			wantMode:  ClaudeModeAccept,
 		},
 		{
 			name: "Waiting - Interview mode",
@@ -161,7 +161,7 @@ Continue? (Y/n)`,
   Chat about this
   Skip interview and plan immediately
 Enter to select · ↑/↓ to navigate · Esc to cancel`,
-			wantState: claudeStateWaiting,
+			wantState: ClaudeStateWaiting,
 		},
 		{
 			name: "Waiting - Bash command confirmation dialog",
@@ -174,7 +174,7 @@ Enter to select · ↑/↓ to navigate · Esc to cancel`,
    3. No
 
  Esc to cancel · Tab to amend · ctrl+e to explain`,
-			wantState: claudeStateWaiting,
+			wantState: ClaudeStateWaiting,
 		},
 		{
 			name: "Running with action text and accept edits mode",
@@ -185,8 +185,8 @@ Enter to select · ↑/↓ to navigate · Esc to cancel`,
 ❯
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   ⏵⏵ accept edits on (shift+tab to cycle)`,
-			wantState: claudeStateRunning,
-			wantMode:  claudeModeAccept,
+			wantState: ClaudeStateRunning,
+			wantMode:  ClaudeModeAccept,
 		},
 		{
 			name: "Idle with trust dialog overlay (prompt is last meaningful line)",
@@ -201,7 +201,7 @@ Enter to select · ↑/↓ to navigate · Esc to cancel`,
 ❯ Try "fix typecheck errors"
 ───────────────────────────────────────
   ? for shortcuts`,
-			wantState: claudeStateIdle,
+			wantState: ClaudeStateIdle,
 		},
 		{
 			name: "Idle with file changes status line",
@@ -211,18 +211,18 @@ Enter to select · ↑/↓ to navigate · Esc to cancel`,
 ❯
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   4 files +42 -0`,
-			wantState: claudeStateIdle,
+			wantState: ClaudeStateIdle,
 		},
 		{
 			name: "Unknown state",
 			content: `Some random output
 without any recognizable pattern`,
-			wantState: claudeStateUnknown,
+			wantState: ClaudeStateUnknown,
 		},
 		{
 			name:      "Empty content",
 			content:   "",
-			wantState: claudeStateUnknown,
+			wantState: ClaudeStateUnknown,
 		},
 	}
 
@@ -230,10 +230,10 @@ without any recognizable pattern`,
 		t.Run(tt.name, func(t *testing.T) {
 			got := parseClaudeStatus(tt.content)
 			if got.State != tt.wantState {
-				t.Errorf("parseClaudeStatus().State = %q, want %q", got.State, tt.wantState)
+				t.Errorf("parseClaudeStatus().State = %v, want %v", got.State, tt.wantState)
 			}
 			if got.Mode != tt.wantMode {
-				t.Errorf("parseClaudeStatus().Mode = %q, want %q", got.Mode, tt.wantMode)
+				t.Errorf("parseClaudeStatus().Mode = %v, want %v", got.Mode, tt.wantMode)
 			}
 		})
 	}

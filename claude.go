@@ -9,22 +9,51 @@ import (
 
 const claudePrefixIdle = "✳"
 
-type ClaudeStatus struct {
-	State string
-	Mode  string
+type ClaudeState int
+
+const (
+	ClaudeStateUnknown ClaudeState = iota
+	ClaudeStateIdle
+	ClaudeStateRunning
+	ClaudeStateWaiting
+)
+
+func (s ClaudeState) String() string {
+	switch s {
+	case ClaudeStateIdle:
+		return "Idle"
+	case ClaudeStateRunning:
+		return "Running"
+	case ClaudeStateWaiting:
+		return "Waiting"
+	default:
+		return "Unknown"
+	}
 }
 
-const (
-	claudeStateIdle    = "Idle"
-	claudeStateRunning = "Running"
-	claudeStateWaiting = "Waiting"
-	claudeStateUnknown = "Unknown"
-)
+type ClaudeMode int
 
 const (
-	claudeModePlan   = "plan mode"
-	claudeModeAccept = "accept edits"
+	ClaudeModeNone ClaudeMode = iota
+	ClaudeModePlan
+	ClaudeModeAccept
 )
+
+func (m ClaudeMode) String() string {
+	switch m {
+	case ClaudeModePlan:
+		return "plan mode"
+	case ClaudeModeAccept:
+		return "accept edits"
+	default:
+		return ""
+	}
+}
+
+type ClaudeStatus struct {
+	State ClaudeState
+	Mode  ClaudeMode
+}
 
 var (
 	claudeVersionPattern           = regexp.MustCompile(`^\d+\.\d+`)
@@ -134,57 +163,57 @@ func parseClaudeStatus(content string) ClaudeStatus {
 	var s ClaudeStatus
 
 	if claudePlanModePattern.MatchString(combined) {
-		s.Mode = claudeModePlan
+		s.Mode = ClaudeModePlan
 	} else if claudeAcceptEditsPattern.MatchString(combined) {
-		s.Mode = claudeModeAccept
+		s.Mode = ClaudeModeAccept
 	}
 
 	if claudeRunningPattern.MatchString(combined) ||
 		claudeRunningPatternTimeFirst.MatchString(combined) ||
 		claudeRunningFallbackPattern.MatchString(combined) ||
 		claudeEscToInterruptEndPattern.MatchString(combined) {
-		s.State = claudeStateRunning
+		s.State = ClaudeStateRunning
 		return s
 	}
 
 	if isClaudePromptLine(lines) {
-		s.State = claudeStateIdle
+		s.State = ClaudeStateIdle
 		return s
 	}
 
 	for _, kw := range claudeWaitingPatterns {
 		if strings.Contains(combined, kw) {
-			s.State = claudeStateWaiting
+			s.State = ClaudeStateWaiting
 			return s
 		}
 	}
 	if claudeInterviewPattern.MatchString(combined) || claudeSelectionMenuPattern.MatchString(combined) {
-		s.State = claudeStateWaiting
+		s.State = ClaudeStateWaiting
 		return s
 	}
 
 	if claudeIdlePattern.MatchString(combined) {
-		s.State = claudeStateIdle
+		s.State = ClaudeStateIdle
 		return s
 	}
 
-	s.State = claudeStateUnknown
+	s.State = ClaudeStateUnknown
 	return s
 }
 
 func claudeStatusEmoji(s ClaudeStatus) string {
 	switch s.Mode {
-	case claudeModePlan:
+	case ClaudeModePlan:
 		return "📋"
-	case claudeModeAccept:
+	case ClaudeModeAccept:
 		return "✏️"
 	}
 	switch s.State {
-	case claudeStateIdle:
+	case ClaudeStateIdle:
 		return "⌛ "
-	case claudeStateRunning:
+	case ClaudeStateRunning:
 		return "🏃"
-	case claudeStateWaiting:
+	case ClaudeStateWaiting:
 		return "🚧"
 	default:
 		return "❓"
