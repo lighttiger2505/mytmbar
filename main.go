@@ -18,6 +18,7 @@ func main() {
 			&cli.StringFlag{Name: "cmd", Usage: "tmux window current command"},
 			&cli.Int64Flag{Name: "pid", Usage: "tmux pane pid"},
 			&cli.StringFlag{Name: "title", Usage: "tmux pane title"},
+			&cli.StringFlag{Name: "pane-id", Usage: "tmux pane id"},
 		},
 		Action: run,
 	}
@@ -31,16 +32,15 @@ func run(c *cli.Context) error {
 	cmd := c.String("cmd")
 	panePID := c.Int64("pid")
 	title := c.String("title")
+	paneID := c.String("pane-id")
 
-	// Claude Code detection via title+cmd (tcmux approach)
-	if isClaude(title, cmd) {
-		fmt.Println(claudeWindowStatus(title))
-		return nil
-	}
-
-	// Claude Code detection via child process (fallback for shell wrappers)
-	if panePID > 0 && hasClaudeChild(int32(panePID)) {
-		fmt.Println(claudeWindowStatus(title))
+	if isClaude(title, cmd) || (panePID > 0 && hasClaudeChild(int32(panePID))) {
+		content, err := capturePane(paneID)
+		if err != nil || content == "" {
+			fmt.Println("🤖 Claude")
+			return nil
+		}
+		fmt.Println(claudeWindowStatus(content))
 		return nil
 	}
 
