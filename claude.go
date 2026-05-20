@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"regexp"
+	"slices"
 	"strings"
 	"unicode"
 )
@@ -100,25 +101,23 @@ func mayBeClaudeTitle(title string) bool {
 	if unicode.In(runes[0], unicode.Braille) {
 		return true
 	}
-	for _, s := range claudeRunningSpinners {
-		if runes[0] == s {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(claudeRunningSpinners, runes[0])
 }
 
 func lastNonEmptyLines(lines []string, n int) []string {
 	var result []string
-	for i := len(lines) - 1; i >= 0 && len(result) < n; i-- {
-		line := strings.TrimSpace(lines[i])
+	for _, v := range slices.Backward(lines) {
+		if len(result) >= n {
+			break
+		}
+		line := strings.TrimSpace(v)
 		if line == "" {
 			continue
 		}
 		if isSeparatorLine(line) {
 			continue
 		}
-		result = append([]string{lines[i]}, result...)
+		result = append([]string{v}, result...)
 	}
 	return result
 }
@@ -133,8 +132,8 @@ func isSeparatorLine(line string) bool {
 }
 
 func isClaudePromptLine(lines []string) bool {
-	for i := len(lines) - 1; i >= 0; i-- {
-		line := strings.TrimSpace(lines[i])
+	for _, v := range slices.Backward(lines) {
+		line := strings.TrimSpace(v)
 		if line == "" {
 			continue
 		}

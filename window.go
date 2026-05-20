@@ -4,16 +4,12 @@ import (
 	"fmt"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 )
 
 func isSpecialCommand(cmd string, specialCmds []string) bool {
-	for _, s := range specialCmds {
-		if cmd == s {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(specialCmds, cmd)
 }
 
 func gitWindowStatus(dirpath string) (string, error) {
