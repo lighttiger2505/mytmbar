@@ -167,36 +167,39 @@ func parseClaudeStatus(content string) ClaudeStatus {
 		s.Mode = ClaudeModeAccept
 	}
 
-	if claudeRunningPattern.MatchString(combined) ||
+	isRunning := claudeRunningPattern.MatchString(combined) ||
 		claudeRunningPatternTimeFirst.MatchString(combined) ||
 		claudeRunningFallbackPattern.MatchString(combined) ||
-		claudeEscToInterruptEndPattern.MatchString(combined) {
-		s.State = ClaudeStateRunning
-		return s
-	}
+		claudeEscToInterruptEndPattern.MatchString(combined)
 
-	if isClaudePromptLine(lines) {
-		s.State = ClaudeStateIdle
-		return s
-	}
-
+	isWaiting := false
 	for _, kw := range claudeWaitingPatterns {
 		if strings.Contains(combined, kw) {
-			s.State = ClaudeStateWaiting
-			return s
+			isWaiting = true
+			break
 		}
 	}
-	if claudeInterviewPattern.MatchString(combined) || claudeSelectionMenuPattern.MatchString(combined) {
-		s.State = ClaudeStateWaiting
-		return s
+	if !isWaiting && (claudeInterviewPattern.MatchString(combined) || claudeSelectionMenuPattern.MatchString(combined)) {
+		isWaiting = true
 	}
 
-	if claudeIdlePattern.MatchString(combined) {
+	// Idle is confirmed when the trailing line is a ❯ prompt, unless a Running spinner is present.
+	// (The ❯ prompt is always visible in the CLI layout even while Running, so Running takes priority.)
+	if isClaudePromptLine(lines) && !isRunning {
 		s.State = ClaudeStateIdle
 		return s
 	}
 
-	s.State = ClaudeStateUnknown
+	switch {
+	case isWaiting:
+		s.State = ClaudeStateWaiting
+	case isRunning:
+		s.State = ClaudeStateRunning
+	case claudeIdlePattern.MatchString(combined):
+		s.State = ClaudeStateIdle
+	default:
+		s.State = ClaudeStateUnknown
+	}
 	return s
 }
 
