@@ -9,9 +9,9 @@ func TestClaudeStatusEmoji(t *testing.T) {
 		want   string
 	}{
 		{"running", ClaudeStatus{State: ClaudeStateRunning}, "🏃"},
-		{"idle", ClaudeStatus{State: ClaudeStateIdle}, "⌛ "},
+		{"idle", ClaudeStatus{State: ClaudeStateIdle}, "⌛"},
 		{"waiting", ClaudeStatus{State: ClaudeStateWaiting}, "🚧"},
-		{"plan mode idle", ClaudeStatus{Mode: ClaudeModePlan, State: ClaudeStateIdle}, "📋⌛ "},
+		{"plan mode idle", ClaudeStatus{Mode: ClaudeModePlan, State: ClaudeStateIdle}, "📋⌛"},
 		{"accept edits running", ClaudeStatus{Mode: ClaudeModeAccept, State: ClaudeStateRunning}, "✏️🏃"},
 		{"unknown", ClaudeStatus{State: ClaudeStateUnknown}, "❓"},
 		{"empty", ClaudeStatus{}, "❓"},

@@ -56,7 +56,7 @@ func generateContent(flags *Flags) (string, error) {
 	if isClaude(flags.title, flags.cmd) || (flags.panePID > 0 && hasClaudeChild(int32(flags.panePID))) {
 		content, err := capturePane(flags.paneID)
 		if err != nil || content == "" {
-			return "🤖 Claude", nil
+			return "🤖Claude", nil
 		}
 		return claudeWindowStatus(content), nil
 	}
@@ -67,7 +67,7 @@ func generateContent(flags *Flags) (string, error) {
 	}
 
 	if !isSpecialCommand(flags.cmd, cfg.SpecialCommands) {
-		return fmt.Sprintf("✅ %s", flags.cmd), nil
+		return fmt.Sprintf("✅%s", flags.cmd), nil
 	}
 
 	status, err := gitWindowStatus(flags.dirpath)

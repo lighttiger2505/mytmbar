@@ -15,27 +15,27 @@ func isSpecialCommand(cmd string, specialCmds []string) bool {
 func gitWindowStatus(dirpath string) (string, error) {
 	topLevel, err := runGit(dirpath, "rev-parse", "--show-toplevel")
 	if err != nil {
-		return fmt.Sprintf("📁 %s", filepath.Base(dirpath)), nil
+		return fmt.Sprintf("📁%s", filepath.Base(dirpath)), nil
 	}
 
 	commonDir, err := runGit(dirpath, "rev-parse", "--git-common-dir")
 	if err != nil {
-		return fmt.Sprintf("🌿 %s", filepath.Base(topLevel)), nil
+		return fmt.Sprintf("🌿%s", filepath.Base(topLevel)), nil
 	}
 
 	gitDir, err := runGit(dirpath, "rev-parse", "--git-dir")
 	if err != nil {
-		return fmt.Sprintf("🌿 %s", filepath.Base(topLevel)), nil
+		return fmt.Sprintf("🌿%s", filepath.Base(topLevel)), nil
 	}
 
 	if commonDir != gitDir {
 		// worktree: commonDir points to main repo's .git, gitDir points to worktree's .git
 		repoName := filepath.Base(filepath.Dir(commonDir))
 		worktreeName := filepath.Base(topLevel)
-		return fmt.Sprintf("🌿 %s 🌲 %s", repoName, worktreeName), nil
+		return fmt.Sprintf("🌿%s 🌲%s", repoName, worktreeName), nil
 	}
 
-	return fmt.Sprintf("🌿 %s", filepath.Base(topLevel)), nil
+	return fmt.Sprintf("🌿%s", filepath.Base(topLevel)), nil
 }
 
 func runGit(dir string, args ...string) (string, error) {

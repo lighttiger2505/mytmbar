@@ -214,7 +214,7 @@ func claudeStatusEmoji(s ClaudeStatus) string {
 	var state string
 	switch s.State {
 	case ClaudeStateIdle:
-		state = "⌛ "
+		state = "⌛"
 	case ClaudeStateRunning:
 		state = "🏃"
 	case ClaudeStateWaiting:
@@ -227,5 +227,5 @@ func claudeStatusEmoji(s ClaudeStatus) string {
 
 func claudeWindowStatus(content string) string {
 	claudeState := parseClaudeStatus(content)
-	return fmt.Sprintf("🤖 Claude[%s%s]", claudeStatusEmoji(claudeState), claudeState.State)
+	return fmt.Sprintf("🤖Claude[%s%s]", claudeStatusEmoji(claudeState), claudeState.State)
 }
