@@ -202,22 +202,25 @@ func parseClaudeStatus(content string) ClaudeStatus {
 }
 
 func claudeStatusEmoji(s ClaudeStatus) string {
+	var mode string
 	switch s.Mode {
 	case ClaudeModePlan:
-		return "📋"
+		mode = "📋"
 	case ClaudeModeAccept:
-		return "✏️"
+		mode = "✏️"
 	}
+	var state string
 	switch s.State {
 	case ClaudeStateIdle:
-		return "⌛ "
+		state = "⌛ "
 	case ClaudeStateRunning:
-		return "🏃"
+		state = "🏃"
 	case ClaudeStateWaiting:
-		return "🚧"
+		state = "🚧"
 	default:
-		return "❓"
+		state = "❓"
 	}
+	return mode + state
 }
 
 func claudeWindowStatus(content string) string {

@@ -11,8 +11,8 @@ func TestClaudeStatusEmoji(t *testing.T) {
 		{"running", ClaudeStatus{State: ClaudeStateRunning}, "🏃"},
 		{"idle", ClaudeStatus{State: ClaudeStateIdle}, "⌛ "},
 		{"waiting", ClaudeStatus{State: ClaudeStateWaiting}, "🚧"},
-		{"plan mode idle", ClaudeStatus{Mode: ClaudeModePlan, State: ClaudeStateIdle}, "📋"},
-		{"accept edits running", ClaudeStatus{Mode: ClaudeModeAccept, State: ClaudeStateRunning}, "✏️"},
+		{"plan mode idle", ClaudeStatus{Mode: ClaudeModePlan, State: ClaudeStateIdle}, "📋⌛ "},
+		{"accept edits running", ClaudeStatus{Mode: ClaudeModeAccept, State: ClaudeStateRunning}, "✏️🏃"},
 		{"unknown", ClaudeStatus{State: ClaudeStateUnknown}, "❓"},
 		{"empty", ClaudeStatus{}, "❓"},
 	}
