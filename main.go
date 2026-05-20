@@ -27,36 +27,54 @@ func main() {
 	}
 }
 
+type Flags struct {
+	dirpath string
+	cmd     string
+	panePID int
+	title   string
+	paneID  string
+}
+
 func run(c *cli.Context) error {
-	dirpath := c.String("path")
-	cmd := c.String("cmd")
-	panePID := c.Int64("pid")
-	title := c.String("title")
-	paneID := c.String("pane-id")
-
-	if isClaude(title, cmd) || (panePID > 0 && hasClaudeChild(int32(panePID))) {
-		content, err := capturePane(paneID)
-		if err != nil || content == "" {
-			fmt.Println("🤖 Claude")
-			return nil
-		}
-		fmt.Println(claudeWindowStatus(content))
-		return nil
+	flags := &Flags{
+		dirpath: c.String("path"),
+		cmd:     c.String("cmd"),
+		panePID: c.Int("pid"),
+		title:   c.String("title"),
+		paneID:  c.String("pane-id"),
 	}
 
-	cfg, _ := LoadConfig()
-
-	if !isSpecialCommand(cmd, cfg.SpecialCommands) {
-		fmt.Printf("✅ %s\n", cmd)
-		return nil
-	}
-
-	status, err := gitWindowStatus(dirpath)
+	content, err := generateContent(flags)
 	if err != nil {
 		return err
 	}
-	fmt.Println(status)
+	fmt.Printf(" %s \n", content)
 	return nil
+}
+
+func generateContent(flags *Flags) (string, error) {
+	if isClaude(flags.title, flags.cmd) || (flags.panePID > 0 && hasClaudeChild(int32(flags.panePID))) {
+		content, err := capturePane(flags.paneID)
+		if err != nil || content == "" {
+			return "🤖 Claude", nil
+		}
+		return claudeWindowStatus(content), nil
+	}
+
+	cfg, err := LoadConfig()
+	if err != nil {
+		return "", err
+	}
+
+	if !isSpecialCommand(flags.cmd, cfg.SpecialCommands) {
+		return fmt.Sprintf("✅ %s", flags.cmd), nil
+	}
+
+	status, err := gitWindowStatus(flags.dirpath)
+	if err != nil {
+		return "", err
+	}
+	return status, nil
 }
 
 func hasClaudeChild(pid int32) bool {
