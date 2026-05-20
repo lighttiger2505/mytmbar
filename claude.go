@@ -19,8 +19,11 @@ const (
 	claudeStateRunning = "Running"
 	claudeStateWaiting = "Waiting"
 	claudeStateUnknown = "Unknown"
-	claudeModePlan     = "plan mode"
-	claudeModeAccept   = "accept edits"
+)
+
+const (
+	claudeModePlan   = "plan mode"
+	claudeModeAccept = "accept edits"
 )
 
 var (
@@ -177,16 +180,18 @@ func claudeStatusEmoji(s ClaudeStatus) string {
 		return "✏️"
 	}
 	switch s.State {
+	case claudeStateIdle:
+		return "⌛ "
 	case claudeStateRunning:
-		return "⚙️"
+		return "🏃"
 	case claudeStateWaiting:
-		return "⏳"
+		return "🚧"
 	default:
-		return "-"
+		return "❓"
 	}
 }
 
 func claudeWindowStatus(content string) string {
 	claudeState := parseClaudeStatus(content)
-	return fmt.Sprintf("🤖 Claude [%s%s]", claudeStatusEmoji(claudeState), claudeState.State)
+	return fmt.Sprintf("🤖 Claude[%s%s]", claudeStatusEmoji(claudeState), claudeState.State)
 }

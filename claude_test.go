@@ -8,13 +8,13 @@ func TestClaudeStatusEmoji(t *testing.T) {
 		status ClaudeStatus
 		want   string
 	}{
-		{"running", ClaudeStatus{State: claudeStateRunning}, "⚙️"},
-		{"idle", ClaudeStatus{State: claudeStateIdle}, "-"},
-		{"waiting", ClaudeStatus{State: claudeStateWaiting}, "⏳"},
+		{"running", ClaudeStatus{State: claudeStateRunning}, "🏃"},
+		{"idle", ClaudeStatus{State: claudeStateIdle}, "⌛ "},
+		{"waiting", ClaudeStatus{State: claudeStateWaiting}, "🚧"},
 		{"plan mode idle", ClaudeStatus{Mode: claudeModePlan, State: claudeStateIdle}, "📋"},
 		{"accept edits running", ClaudeStatus{Mode: claudeModeAccept, State: claudeStateRunning}, "✏️"},
-		{"unknown", ClaudeStatus{State: claudeStateUnknown}, "-"},
-		{"empty", ClaudeStatus{}, "-"},
+		{"unknown", ClaudeStatus{State: claudeStateUnknown}, "❓"},
+		{"empty", ClaudeStatus{}, "❓"},
 	}
 
 	for _, tt := range tests {
