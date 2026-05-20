@@ -182,10 +182,11 @@ func claudeStatusEmoji(s ClaudeStatus) string {
 	case claudeStateWaiting:
 		return "⏳"
 	default:
-		return "🤖"
+		return "-"
 	}
 }
 
 func claudeWindowStatus(content string) string {
-	return fmt.Sprintf("%s Claude", claudeStatusEmoji(parseClaudeStatus(content)))
+	claudeState := parseClaudeStatus(content)
+	return fmt.Sprintf("🤖 Claude [%s%s]", claudeStatusEmoji(claudeState), claudeState.State)
 }
