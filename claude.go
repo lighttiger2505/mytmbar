@@ -38,6 +38,7 @@ const (
 	ClaudeModeNone ClaudeMode = iota
 	ClaudeModePlan
 	ClaudeModeAccept
+	ClaudeModeAuto
 )
 
 func (m ClaudeMode) String() string {
@@ -46,6 +47,8 @@ func (m ClaudeMode) String() string {
 		return "plan mode"
 	case ClaudeModeAccept:
 		return "accept edits"
+	case ClaudeModeAuto:
+		return "auto mode"
 	default:
 		return ""
 	}
@@ -62,6 +65,7 @@ var (
 	claudeRunningPatternTimeFirst  = regexp.MustCompile(`(?m)^[✢✽✶✻·]\s+.+?…?\s*\(((?:\d+[smh]\s*)+)\s*·`)
 	claudeRunningFallbackPattern   = regexp.MustCompile(`(?m)^[✢✽✶✻·]\s+.+?…?\s*\((esc|ctrl\+c) to interrupt`)
 	claudeEscToInterruptEndPattern = regexp.MustCompile(`(?m)·\s*esc to interrupt(\s|·|$)`)
+	claudeAutoModePattern          = regexp.MustCompile(`⏵⏵\s+auto\s+mode\s+on`)
 	claudePlanModePattern          = regexp.MustCompile(`⏸\s+plan\s+mode\s+on`)
 	claudeAcceptEditsPattern       = regexp.MustCompile(`⏵⏵\s+accept\s+edits\s+on`)
 	claudeIdlePattern              = regexp.MustCompile(`(?m)^\s*❯`)
@@ -163,6 +167,8 @@ func parseClaudeStatus(content string) ClaudeStatus {
 
 	if claudePlanModePattern.MatchString(combined) {
 		s.Mode = ClaudeModePlan
+	} else if claudeAutoModePattern.MatchString(combined) {
+		s.Mode = ClaudeModeAuto
 	} else if claudeAcceptEditsPattern.MatchString(combined) {
 		s.Mode = ClaudeModeAccept
 	}
@@ -210,6 +216,8 @@ func claudeStatusEmoji(s ClaudeStatus) string {
 		mode = "📋"
 	case ClaudeModeAccept:
 		mode = "✏️"
+	case ClaudeModeAuto:
+		mode = "🔄"
 	}
 	var state string
 	switch s.State {
