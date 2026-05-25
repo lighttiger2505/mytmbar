@@ -27,6 +27,34 @@ func TestTruncate(t *testing.T) {
 	}
 }
 
+func TestAbbreviateWorktree(t *testing.T) {
+	tests := []struct {
+		name         string
+		repoName     string
+		worktreeName string
+		want         string
+	}{
+		{"ハイフン区切りでプレフィックス省略", "mytmbar", "mytmbar-feature", "feature"},
+		{"アンダースコア区切りでプレフィックス省略", "mytmbar", "mytmbar_bugfix", "bugfix"},
+		{"プレフィックス不一致はそのまま", "mytmbar", "other-branch", "other-branch"},
+		{"完全一致はそのまま", "mytmbar", "mytmbar", "mytmbar"},
+		{"区切り文字なしはそのまま", "mytmbar", "mytmbarextended", "mytmbarextended"},
+		{"区切り文字のみで残りが空はそのまま", "mytmbar", "mytmbar-", "mytmbar-"},
+		{"複数ハイフンは最初の区切りのみ除去", "mytmbar", "mytmbar-feat-123", "feat-123"},
+		{"空のリポジトリ名", "", "branch", "branch"},
+		{"両方空", "", "", ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := abbreviateWorktree(tt.repoName, tt.worktreeName)
+			if got != tt.want {
+				t.Errorf("abbreviateWorktree(%q, %q) = %q, want %q", tt.repoName, tt.worktreeName, got, tt.want)
+			}
+		})
+	}
+}
+
 func TestIsSpecialCommand(t *testing.T) {
 	defaultCmds := []string{"zsh", "bash", "vim", "nvim", "tig"}
 

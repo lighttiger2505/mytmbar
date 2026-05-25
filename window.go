@@ -32,7 +32,8 @@ func gitWindowStatus(dirpath string) (string, error) {
 		// worktree: commonDir points to main repo's .git, gitDir points to worktree's .git
 		repoName := filepath.Base(filepath.Dir(commonDir))
 		worktreeName := filepath.Base(topLevel)
-		return fmt.Sprintf("🌿%s 🌲%s", repoName, truncate(worktreeName, 16)), nil
+		displayName := abbreviateWorktree(repoName, worktreeName)
+		return fmt.Sprintf("🌿%s 🌲%s", repoName, truncate(displayName, 16)), nil
 	}
 
 	return fmt.Sprintf("🌿%s", filepath.Base(topLevel)), nil
@@ -44,6 +45,16 @@ func truncate(s string, maxLen int) string {
 		return string(r[:maxLen-1]) + "…"
 	}
 	return s
+}
+
+func abbreviateWorktree(repoName, worktreeName string) string {
+	if strings.HasPrefix(worktreeName, repoName) && len(worktreeName) > len(repoName)+1 {
+		sep := worktreeName[len(repoName)]
+		if sep == '-' || sep == '_' {
+			return worktreeName[len(repoName)+1:]
+		}
+	}
+	return worktreeName
 }
 
 func runGit(dir string, args ...string) (string, error) {
