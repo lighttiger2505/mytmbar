@@ -50,7 +50,7 @@ func truncate(s string, maxLen int) string {
 func abbreviateWorktree(repoName, worktreeName string) string {
 	if strings.HasPrefix(worktreeName, repoName) && len(worktreeName) > len(repoName)+1 {
 		sep := worktreeName[len(repoName)]
-		if sep == '-' || sep == '_' {
+		if sep == '-' || sep == '_' || sep == '.' {
 			return worktreeName[len(repoName)+1:]
 		}
 	}

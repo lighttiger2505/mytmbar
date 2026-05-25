@@ -35,6 +35,7 @@ func TestAbbreviateWorktree(t *testing.T) {
 		want         string
 	}{
 		{"ハイフン区切りでプレフィックス省略", "mytmbar", "mytmbar-feature", "feature"},
+		{"ピリオド区切りでプレフィックス省略", "mytmbar", "mytmbar.feature", "feature"},
 		{"アンダースコア区切りでプレフィックス省略", "mytmbar", "mytmbar_bugfix", "bugfix"},
 		{"プレフィックス不一致はそのまま", "mytmbar", "other-branch", "other-branch"},
 		{"完全一致はそのまま", "mytmbar", "mytmbar", "mytmbar"},
