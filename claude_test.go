@@ -247,7 +247,7 @@ func TestIsClaude(t *testing.T) {
 		want  bool
 	}{
 		{"claude cmd with idle title", "✳ claude ~/foo", "claude", true},
-		{"node cmd with spinner title", "✢ Clauding…", "node", true},
+		{"node cmd with spinner title", "✢ Clauding…", "node", false},
 		{"version cmd with spinner title", "✢ Clauding…", "2.1.34", true},
 		{"zsh with no claude title", "zsh", "zsh", false},
 		{"claude cmd but no claude title", "just a title", "claude", false},

@@ -53,7 +53,7 @@ func run(c *cli.Context) error {
 }
 
 func generateContent(flags *Flags) (string, error) {
-	if isClaude(flags.title, flags.cmd) || (flags.panePID > 0 && hasClaudeChild(int32(flags.panePID))) {
+	if isClaude(flags.title, flags.cmd) || (flags.panePID > 0 && hasAgentChild(flags.panePID)) {
 		content, err := capturePane(flags.paneID)
 		if err != nil || content == "" {
 			return "🤖Claude", nil
@@ -77,8 +77,8 @@ func generateContent(flags *Flags) (string, error) {
 	return status, nil
 }
 
-func hasClaudeChild(pid int32) bool {
-	children, err := process.NewProcess(pid)
+func hasAgentChild(pid int) bool {
+	children, err := process.NewProcess(int32(pid))
 	if err != nil {
 		return false
 	}
