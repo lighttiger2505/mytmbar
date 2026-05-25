@@ -2,6 +2,31 @@ package main
 
 import "testing"
 
+func TestTruncate(t *testing.T) {
+	tests := []struct {
+		name   string
+		s      string
+		maxLen int
+		want   string
+	}{
+		{"15文字はそのまま", "123456789012345", 16, "123456789012345"},
+		{"ちょうど16文字は省略", "1234567890123456", 16, "123456789012345…"},
+		{"17文字は省略", "12345678901234567", 16, "123456789012345…"},
+		{"空文字列はそのまま", "", 16, ""},
+		{"マルチバイト15文字はそのまま", "あいうえおかきくけこさしすせそ", 16, "あいうえおかきくけこさしすせそ"},
+		{"マルチバイト16文字は省略", "あいうえおかきくけこさしすせそた", 16, "あいうえおかきくけこさしすせそ…"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := truncate(tt.s, tt.maxLen)
+			if got != tt.want {
+				t.Errorf("truncate(%q, %d) = %q, want %q", tt.s, tt.maxLen, got, tt.want)
+			}
+		})
+	}
+}
+
 func TestIsSpecialCommand(t *testing.T) {
 	defaultCmds := []string{"zsh", "bash", "vim", "nvim", "tig"}
 
