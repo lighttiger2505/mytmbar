@@ -25,18 +25,26 @@ go test -run TestParseClaudeStatus -v
 
 ### 判定フロー（`generateContent` in `main.go`）
 
-1. **Claude 実行中の判定**  
-   `isClaude(title, cmd)`（title の先頭 rune がブレイルや spinner 文字 → Claude の title パターン、かつ cmd が `"claude"` か版番号）または `hasAgentChild(pid)`（子プロセスに `claude` が存在）が true なら、`capturePane` で pane テキストを取得し `claudeWindowStatus` で状態を解析。  
-   出力例: `🤖Claude[🏃Running]`
+出力は常に `<ディレクトリ情報> [コマンド枠]` の形。ディレクトリ情報を先に算出し、その後コマンド枠を出し分ける。
 
-2. **通常コマンドの表示**  
-   `special_commands`（`~/.config/mytmbar/config.toml`）に含まれないコマンドなら `✅<cmd>` を返す。
+**ディレクトリ情報**（`gitWindowStatus` in `window.go`）:
+- 通常リポジトリ: `🌿<repo>`
+- linked worktree: `🌿<repo> 🌲<branch>`
+- Git 外: `📁<dirname>`
 
-3. **Git ステータスの表示**  
-   special command（デフォルト: zsh/bash/vim/nvim/tig）なら `gitWindowStatus` を呼ぶ。  
-   - 通常リポジトリ: `🌿<repo>`  
-   - linked worktree: `🌿<repo> 🌲<branch>`  
-   - Git 外: `📁<dirname>`
+**コマンド枠**（3 パターン）:
+
+1. **Claude 実行中**  
+   `isClaude(title, cmd)` または `hasAgentChild(pid)` が true なら、`capturePane` で pane テキストを取得し `claudeWindowStatus` で状態を解析してコマンド枠に入れる。`✅claude` は出さない。  
+   出力例: `🌿myrepo 🤖Claude[🏃Running]`
+
+2. **シェル**（`special_commands`、デフォルト: `zsh/bash`）  
+   コマンド枠なし。ディレクトリのみ。  
+   出力例: `🌿myrepo`
+
+3. **その他のコマンド**（vim/nvim/tig/npm/go など）  
+   `✅<cmd>` をコマンド枠として付与。  
+   出力例: `🌿myrepo ✅vim`、`📁tmp ✅go`
 
 ### ファイル別の役割
 

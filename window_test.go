@@ -28,7 +28,7 @@ func TestTruncate(t *testing.T) {
 }
 
 func TestIsSpecialCommand(t *testing.T) {
-	defaultCmds := []string{"zsh", "bash", "vim", "nvim", "tig"}
+	defaultCmds := []string{"zsh", "bash"}
 
 	tests := []struct {
 		name        string
@@ -38,9 +38,9 @@ func TestIsSpecialCommand(t *testing.T) {
 	}{
 		{"zsh is special", "zsh", defaultCmds, true},
 		{"bash is special", "bash", defaultCmds, true},
-		{"vim is special", "vim", defaultCmds, true},
-		{"nvim is special", "nvim", defaultCmds, true},
-		{"tig is special", "tig", defaultCmds, true},
+		{"vim is not special", "vim", defaultCmds, false},
+		{"nvim is not special", "nvim", defaultCmds, false},
+		{"tig is not special", "tig", defaultCmds, false},
 		{"go is not special", "go", defaultCmds, false},
 		{"python is not special", "python", defaultCmds, false},
 		{"custom cmd in custom list", "htop", []string{"htop", "top"}, true},

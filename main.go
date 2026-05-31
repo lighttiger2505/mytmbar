@@ -53,28 +53,31 @@ func run(c *cli.Context) error {
 }
 
 func generateContent(flags *Flags) (string, error) {
-	if isClaude(flags.title, flags.cmd) || (flags.panePID > 0 && hasAgentChild(flags.panePID)) {
-		content, err := capturePane(flags.paneID)
-		if err != nil || content == "" {
-			return "🤖Claude", nil
-		}
-		return claudeWindowStatus(content), nil
-	}
-
 	cfg, err := LoadConfig()
 	if err != nil {
 		return "", err
-	}
-
-	if !isSpecialCommand(flags.cmd, cfg.SpecialCommands) {
-		return fmt.Sprintf("✅%s", flags.cmd), nil
 	}
 
 	status, err := gitWindowStatus(flags.dirpath)
 	if err != nil {
 		return "", err
 	}
-	return status, nil
+
+	// Claude takes the command slot; never show "✅claude".
+	if isClaude(flags.title, flags.cmd) || (flags.panePID > 0 && hasAgentChild(flags.panePID)) {
+		claudePart := "🤖Claude"
+		if content, err := capturePane(flags.paneID); err == nil && content != "" {
+			claudePart = claudeWindowStatus(content)
+		}
+		return fmt.Sprintf("%s %s", status, claudePart), nil
+	}
+
+	// Shell commands carry no useful name; show directory only.
+	if isSpecialCommand(flags.cmd, cfg.SpecialCommands) {
+		return status, nil
+	}
+
+	return fmt.Sprintf("%s ✅%s", status, flags.cmd), nil
 }
 
 func hasAgentChild(pid int) bool {

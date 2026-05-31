@@ -7,7 +7,7 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-var defaultSpecialCommands = []string{"zsh", "bash", "vim", "nvim", "tig"}
+var defaultSpecialCommands = []string{"zsh", "bash"}
 
 type Config struct {
 	SpecialCommands []string `toml:"special_commands"`
