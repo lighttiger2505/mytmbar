@@ -58,7 +58,7 @@ func generateContent(flags *Flags) (string, error) {
 		return "", err
 	}
 
-	// Claude takes the command slot; never show "✅claude".
+	// Claude takes the command slot; never show "🚀claude".
 	if isClaude(flags.title, flags.cmd) || (flags.panePID > 0 && hasAgentChild(flags.panePID)) {
 		claudePart := "🤖Claude"
 		if content, err := capturePane(flags.paneID); err == nil && content != "" {
@@ -72,7 +72,7 @@ func generateContent(flags *Flags) (string, error) {
 		return status, nil
 	}
 
-	return fmt.Sprintf("%s ✅%s", status, flags.cmd), nil
+	return fmt.Sprintf("%s 🚀%s", status, flags.cmd), nil
 }
 
 func hasAgentChild(pid int) bool {
