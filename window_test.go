@@ -27,32 +27,33 @@ func TestTruncate(t *testing.T) {
 	}
 }
 
-func TestIsSpecialCommand(t *testing.T) {
-	defaultCmds := []string{"zsh", "bash"}
-
+func TestIsShellCommand(t *testing.T) {
 	tests := []struct {
-		name        string
-		cmd         string
-		specialCmds []string
-		want        bool
+		name string
+		cmd  string
+		want bool
 	}{
-		{"zsh is special", "zsh", defaultCmds, true},
-		{"bash is special", "bash", defaultCmds, true},
-		{"vim is not special", "vim", defaultCmds, false},
-		{"nvim is not special", "nvim", defaultCmds, false},
-		{"tig is not special", "tig", defaultCmds, false},
-		{"go is not special", "go", defaultCmds, false},
-		{"python is not special", "python", defaultCmds, false},
-		{"custom cmd in custom list", "htop", []string{"htop", "top"}, true},
-		{"cmd not in custom list", "vim", []string{"htop", "top"}, false},
-		{"empty list", "zsh", []string{}, false},
+		{"zsh is shell", "zsh", true},
+		{"bash is shell", "bash", true},
+		{"sh is shell", "sh", true},
+		{"fish is shell", "fish", true},
+		{"tcsh is shell", "tcsh", true},
+		{"csh is shell", "csh", true},
+		{"ksh is shell", "ksh", true},
+		{"dash is shell", "dash", true},
+		{"nu is shell", "nu", true},
+		{"vim is not shell", "vim", false},
+		{"nvim is not shell", "nvim", false},
+		{"tig is not shell", "tig", false},
+		{"go is not shell", "go", false},
+		{"python is not shell", "python", false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := isSpecialCommand(tt.cmd, tt.specialCmds)
+			got := isShellCommand(tt.cmd)
 			if got != tt.want {
-				t.Errorf("isSpecialCommand(%q, %v) = %v, want %v", tt.cmd, tt.specialCmds, got, tt.want)
+				t.Errorf("isShellCommand(%q) = %v, want %v", tt.cmd, got, tt.want)
 			}
 		})
 	}

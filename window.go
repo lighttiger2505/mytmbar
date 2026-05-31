@@ -8,8 +8,10 @@ import (
 	"strings"
 )
 
-func isSpecialCommand(cmd string, specialCmds []string) bool {
-	return slices.Contains(specialCmds, cmd)
+var shellCommands = []string{"zsh", "bash", "sh", "fish", "tcsh", "csh", "ksh", "dash", "nu"}
+
+func isShellCommand(cmd string) bool {
+	return slices.Contains(shellCommands, cmd)
 }
 
 func gitWindowStatus(dirpath string) (string, error) {

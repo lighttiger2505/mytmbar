@@ -3,7 +3,6 @@ module github.com/lighttiger2505/mytmbar
 go 1.26.3
 
 require (
-	github.com/BurntSushi/toml v1.6.0
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/urfave/cli/v2 v2.27.7
 )

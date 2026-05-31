@@ -53,11 +53,6 @@ func run(c *cli.Context) error {
 }
 
 func generateContent(flags *Flags) (string, error) {
-	cfg, err := LoadConfig()
-	if err != nil {
-		return "", err
-	}
-
 	status, err := gitWindowStatus(flags.dirpath)
 	if err != nil {
 		return "", err
@@ -73,7 +68,7 @@ func generateContent(flags *Flags) (string, error) {
 	}
 
 	// Shell commands carry no useful name; show directory only.
-	if isSpecialCommand(flags.cmd, cfg.SpecialCommands) {
+	if isShellCommand(flags.cmd) {
 		return status, nil
 	}
 

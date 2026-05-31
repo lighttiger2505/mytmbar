@@ -38,7 +38,7 @@ go test -run TestParseClaudeStatus -v
    `isClaude(title, cmd)` または `hasAgentChild(pid)` が true なら、`capturePane` で pane テキストを取得し `claudeWindowStatus` で状態を解析してコマンド枠に入れる。`✅claude` は出さない。  
    出力例: `🌿myrepo 🤖Claude[🏃Running]`
 
-2. **シェル**（`special_commands`、デフォルト: `zsh/bash`）  
+2. **シェル**（`shellCommands` in `window.go`: zsh/bash/sh/fish/tcsh/csh/ksh/dash/nu）  
    コマンド枠なし。ディレクトリのみ。  
    出力例: `🌿myrepo`
 
@@ -49,8 +49,7 @@ go test -run TestParseClaudeStatus -v
 ### ファイル別の役割
 
 - **`claude.go`** — `parseClaudeStatus` が pane テキストを正規表現で解析し `ClaudeState`（Idle/Running/Waiting）と `ClaudeMode`（plan/accept/auto）を返す。正規表現群（`claudeRunningPattern` など）が判定の中核。
-- **`window.go`** — `git rev-parse` で toplevel/commonDir/gitDir を比較し worktree を判定。`truncate` はマルチバイト対応（rune 単位）。
-- **`config.go`** — TOML 設定ファイル読み込み。読み込み失敗時はエラーを返さずデフォルト値にフォールバックする設計。
+- **`window.go`** — `git rev-parse` で toplevel/commonDir/gitDir を比較し worktree を判定。`truncate` はマルチバイト対応（rune 単位）。シェルコマンドのリスト（`shellCommands`）と判定関数（`isShellCommand`）もここ。
 - **`tmux.go`** — `tmux capture-pane -t <paneID> -p` のラッパー。
 
 ## Conventions
