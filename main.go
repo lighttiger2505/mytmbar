@@ -44,7 +44,8 @@ func run(c *cli.Context) error {
 		paneID:  c.String("pane-id"),
 	}
 
-	content, err := generateContent(flags)
+	cfg := LoadConfig()
+	content, err := generateContent(flags, cfg)
 	if err != nil {
 		return err
 	}
@@ -52,17 +53,17 @@ func run(c *cli.Context) error {
 	return nil
 }
 
-func generateContent(flags *Flags) (string, error) {
-	status, err := gitWindowStatus(flags.dirpath)
+func generateContent(flags *Flags, cfg *Config) (string, error) {
+	status, err := gitWindowStatus(flags.dirpath, cfg)
 	if err != nil {
 		return "", err
 	}
 
-	// Claude takes the command slot; never show "🚀claude".
+	// Claude takes the command slot; never show the command icon for claude.
 	if isClaude(flags.title, flags.cmd) || (flags.panePID > 0 && hasAgentChild(flags.panePID)) {
-		claudePart := "🤖Claude"
+		claudePart := cfg.Icons.Claude + "Claude"
 		if content, err := capturePane(flags.paneID); err == nil && content != "" {
-			claudePart = claudeWindowStatus(content)
+			claudePart = claudeWindowStatus(content, cfg)
 		}
 		return fmt.Sprintf("%s %s", status, claudePart), nil
 	}
@@ -72,7 +73,7 @@ func generateContent(flags *Flags) (string, error) {
 		return status, nil
 	}
 
-	return fmt.Sprintf("%s 🚀%s", status, flags.cmd), nil
+	return fmt.Sprintf("%s %s%s", status, cfg.Icons.Command, truncate(flags.cmd, cfg.Lengths.Command)), nil
 }
 
 func hasAgentChild(pid int) bool {

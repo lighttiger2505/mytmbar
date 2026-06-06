@@ -17,9 +17,10 @@ func TestClaudeStatusEmoji(t *testing.T) {
 		{"empty", ClaudeStatus{}, "❓"},
 	}
 
+	cfg := defaultConfig()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := claudeStatusEmoji(tt.status)
+			got := claudeStatusEmoji(tt.status, cfg)
 			if got != tt.want {
 				t.Errorf("claudeStatusEmoji(%+v) = %q, want %q", tt.status, got, tt.want)
 			}

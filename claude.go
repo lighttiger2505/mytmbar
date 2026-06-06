@@ -209,31 +209,32 @@ func parseClaudeStatus(content string) ClaudeStatus {
 	return s
 }
 
-func claudeStatusEmoji(s ClaudeStatus) string {
+func claudeStatusEmoji(s ClaudeStatus, cfg *Config) string {
+	icons := cfg.Icons
 	var mode string
 	switch s.Mode {
 	case ClaudeModePlan:
-		mode = "📋"
+		mode = icons.ModePlan
 	case ClaudeModeAccept:
-		mode = "✏️"
+		mode = icons.ModeAccept
 	case ClaudeModeAuto:
-		mode = "🔄"
+		mode = icons.ModeAuto
 	}
 	var state string
 	switch s.State {
 	case ClaudeStateIdle:
-		state = "⌛"
+		state = icons.StateIdle
 	case ClaudeStateRunning:
-		state = "🏃"
+		state = icons.StateRunning
 	case ClaudeStateWaiting:
-		state = "🚧"
+		state = icons.StateWaiting
 	default:
-		state = "❓"
+		state = icons.StateUnknown
 	}
 	return mode + state
 }
 
-func claudeWindowStatus(content string) string {
+func claudeWindowStatus(content string, cfg *Config) string {
 	claudeState := parseClaudeStatus(content)
-	return fmt.Sprintf("🤖Claude[%s%s]", claudeStatusEmoji(claudeState), claudeState.State)
+	return fmt.Sprintf("%sClaude[%s%s]", cfg.Icons.Claude, claudeStatusEmoji(claudeState, cfg), claudeState.State)
 }
