@@ -32,10 +32,16 @@ type Icons struct {
 	ModeAuto       string `toml:"mode_auto"`
 }
 
+// Display holds display-mode toggles.
+type Display struct {
+	Short bool `toml:"short"`
+}
+
 // Config is the top-level configuration structure.
 type Config struct {
 	Lengths Lengths `toml:"lengths"`
 	Icons   Icons   `toml:"icons"`
+	Display Display `toml:"display"`
 }
 
 // defaultConfig returns a Config populated with the built-in defaults.
@@ -45,6 +51,9 @@ func defaultConfig() *Config {
 			Directory: 20,
 			Branch:    16,
 			Command:   16,
+		},
+		Display: Display{
+			Short: false,
 		},
 		Icons: Icons{
 			Repo:           "🌿",

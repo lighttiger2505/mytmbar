@@ -32,6 +32,19 @@ func (s ClaudeState) String() string {
 	}
 }
 
+func (s ClaudeState) ShortString() string {
+	switch s {
+	case ClaudeStateIdle:
+		return "I"
+	case ClaudeStateRunning:
+		return "R"
+	case ClaudeStateWaiting:
+		return "W"
+	default:
+		return "U"
+	}
+}
+
 type ClaudeMode int
 
 const (
@@ -236,5 +249,11 @@ func claudeStatusEmoji(s ClaudeStatus, cfg *Config) string {
 
 func claudeWindowStatus(content string, cfg *Config) string {
 	claudeState := parseClaudeStatus(content)
-	return fmt.Sprintf("%sClaude[%s%s]", cfg.Icons.Claude, claudeStatusEmoji(claudeState, cfg), claudeState.State)
+	label := "Claude"
+	stateStr := claudeState.State.String()
+	if cfg.Display.Short {
+		label = "CC"
+		stateStr = claudeState.State.ShortString()
+	}
+	return fmt.Sprintf("%s%s[%s%s]", cfg.Icons.Claude, label, claudeStatusEmoji(claudeState, cfg), stateStr)
 }

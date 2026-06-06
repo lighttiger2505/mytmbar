@@ -58,6 +58,11 @@ func TestDefaultConfig(t *testing.T) {
 		t.Errorf("Icons.StateUnknown = %q, want ❓", cfg.Icons.StateUnknown)
 	}
 
+	// display
+	if cfg.Display.Short != false {
+		t.Errorf("Display.Short = %v, want false", cfg.Display.Short)
+	}
+
 	// mode icons
 	if cfg.Icons.ModePlan != "📋" {
 		t.Errorf("Icons.ModePlan = %q, want 📋", cfg.Icons.ModePlan)
@@ -141,6 +146,32 @@ repo = "📦"
 		// unspecified icon stays default
 		if cfg.Icons.Claude != "🤖" {
 			t.Errorf("Icons.Claude = %q, want 🤖 (default)", cfg.Icons.Claude)
+		}
+	})
+
+	t.Run("display short override", func(t *testing.T) {
+		dir := t.TempDir()
+		t.Setenv("XDG_CONFIG_HOME", dir)
+
+		cfgDir := filepath.Join(dir, "mytmbar")
+		if err := os.MkdirAll(cfgDir, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		content := `[display]
+short = true
+`
+		if err := os.WriteFile(filepath.Join(cfgDir, "config.toml"), []byte(content), 0o644); err != nil {
+			t.Fatal(err)
+		}
+
+		cfg := LoadConfig()
+
+		if !cfg.Display.Short {
+			t.Errorf("Display.Short = false, want true")
+		}
+		// unspecified keys stay at defaults
+		if cfg.Lengths.Directory != 20 {
+			t.Errorf("Lengths.Directory = %d, want 20 (default)", cfg.Lengths.Directory)
 		}
 	})
 

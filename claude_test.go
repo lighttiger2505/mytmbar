@@ -240,6 +240,56 @@ without any recognizable pattern`,
 	}
 }
 
+func TestClaudeStateShortString(t *testing.T) {
+	tests := []struct {
+		state ClaudeState
+		want  string
+	}{
+		{ClaudeStateIdle, "I"},
+		{ClaudeStateRunning, "R"},
+		{ClaudeStateWaiting, "W"},
+		{ClaudeStateUnknown, "U"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.state.String(), func(t *testing.T) {
+			got := tt.state.ShortString()
+			if got != tt.want {
+				t.Errorf("ClaudeState(%d).ShortString() = %q, want %q", tt.state, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestClaudeWindowStatusShort(t *testing.T) {
+	// Idle pane content with ❯ prompt
+	idleContent := "───────────────────────────────────────\n❯\n───────────────────────────────────────"
+	// Running pane content with spinner
+	runningContent := "✢ Clauding… (esc to interrupt · 1m 45s · ↓ 1.2k tokens)"
+
+	tests := []struct {
+		name    string
+		content string
+		short   bool
+		want    string
+	}{
+		{"normal idle", idleContent, false, "🤖Claude[⌛Idle]"},
+		{"short idle", idleContent, true, "🤖CC[⌛I]"},
+		{"normal running", runningContent, false, "🤖Claude[🏃Running]"},
+		{"short running", runningContent, true, "🤖CC[🏃R]"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cfg := defaultConfig()
+			cfg.Display.Short = tt.short
+			got := claudeWindowStatus(tt.content, cfg)
+			if got != tt.want {
+				t.Errorf("claudeWindowStatus() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestIsClaude(t *testing.T) {
 	tests := []struct {
 		name  string

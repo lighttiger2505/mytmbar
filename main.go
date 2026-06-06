@@ -61,7 +61,11 @@ func generateContent(flags *Flags, cfg *Config) (string, error) {
 
 	// Claude takes the command slot; never show the command icon for claude.
 	if isClaude(flags.title, flags.cmd) || (flags.panePID > 0 && hasAgentChild(flags.panePID)) {
-		claudePart := cfg.Icons.Claude + "Claude"
+		label := "Claude"
+		if cfg.Display.Short {
+			label = "CC"
+		}
+		claudePart := cfg.Icons.Claude + label
 		if content, err := capturePane(flags.paneID); err == nil && content != "" {
 			claudePart = claudeWindowStatus(content, cfg)
 		}
