@@ -1,0 +1,51 @@
+# mytmbar configuration file
+#
+# Place this file at:
+#   $XDG_CONFIG_HOME/mytmbar/config.toml   (if XDG_CONFIG_HOME is set)
+#   ~/.config/mytmbar/config.toml          (default)
+#
+# All keys are optional. Any key you omit falls back to the built-in default.
+# Copy this file to the path above, then uncomment and edit the keys you want.
+
+# ---------------------------------------------------------------------------
+# [lengths]
+# Maximum display width (in Unicode code points) for each element.
+# Set to 0 or a negative number to disable truncation.
+# ---------------------------------------------------------------------------
+[lengths]
+# directory = 20   # directory / repo name shown in the status bar
+# branch    = 16   # branch name shown for linked worktrees
+# command   = 16   # command name shown in the command slot
+
+# ---------------------------------------------------------------------------
+# [display]
+# Toggle display modes.
+# ---------------------------------------------------------------------------
+[display]
+# short = false   # When true: "Claude" becomes "CC", state strings are abbreviated
+#                 #   e.g. 🤖Claude[🏃Running] -> 🤖CC[🏃Run]
+
+# ---------------------------------------------------------------------------
+# [icons]
+# Emoji or string used for each indicator.
+# Any UTF-8 string is accepted; emoji or short ASCII both work.
+# ---------------------------------------------------------------------------
+[icons]
+# --- directory / repo ---
+# repo           = "🌿"   # prefix for a normal git repository
+# worktree_branch = "🌲"  # prefix for the branch name in a linked worktree
+# directory      = "📁"   # prefix when the pane is outside any git repository
+
+# --- separators / commands ---
+# separator = "│"   # separator between directory info and the command slot
+# command   = "🚀"  # prefix for non-shell, non-Claude commands (vim, go, etc.)
+
+# --- Claude Code ---
+# claude        = "🤖"   # prefix for the Claude Code label
+# state_idle    = "⌛"   # Claude is idle (waiting for input)
+# state_running = "🏃"   # Claude is actively running
+# state_waiting = "🚧"   # Claude is waiting for user confirmation
+# state_unknown = "❓"   # Claude state could not be determined
+# mode_plan     = "📋"   # Claude is in plan mode
+# mode_accept   = "✏️"   # Claude is in accept-edits mode
+# mode_auto     = "🔄"   # Claude is in auto mode
