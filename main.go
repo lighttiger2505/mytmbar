@@ -65,7 +65,7 @@ func generateContent(flags *Flags, cfg *Config) (string, error) {
 		if content, err := capturePane(flags.paneID); err == nil && content != "" {
 			claudePart = claudeWindowStatus(content, cfg)
 		}
-		return fmt.Sprintf("%s %s", status, claudePart), nil
+		return fmt.Sprintf("%s %s %s", status, cfg.Icons.Separator, claudePart), nil
 	}
 
 	// Shell commands carry no useful name; show directory only.
@@ -73,7 +73,7 @@ func generateContent(flags *Flags, cfg *Config) (string, error) {
 		return status, nil
 	}
 
-	return fmt.Sprintf("%s %s%s", status, cfg.Icons.Command, truncate(flags.cmd, cfg.Lengths.Command)), nil
+	return fmt.Sprintf("%s %s %s%s", status, cfg.Icons.Separator, cfg.Icons.Command, truncate(flags.cmd, cfg.Lengths.Command)), nil
 }
 
 func hasAgentChild(pid int) bool {

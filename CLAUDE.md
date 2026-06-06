@@ -36,15 +36,15 @@ go test -run TestParseClaudeStatus -v
 
 1. **Claude 実行中**  
    `isClaude(title, cmd)` または `hasAgentChild(pid)` が true なら、`capturePane` で pane テキストを取得し `claudeWindowStatus` で状態を解析してコマンド枠に入れる。`🚀claude` は出さない。  
-   出力例: `🌿myrepo 🤖Claude[🏃Running]`
+   出力例: `🌿myrepo │ 🤖Claude[🏃Running]`
 
 2. **シェル**（`shellCommands` in `window.go`: zsh/bash/sh/fish/tcsh/csh/ksh/dash/nu）  
-   コマンド枠なし。ディレクトリのみ。  
+   コマンド枠なし。ディレクトリのみ（セパレータなし）。  
    出力例: `🌿myrepo`
 
 3. **その他のコマンド**（vim/nvim/tig/npm/go など）  
-   `🚀<cmd>` をコマンド枠として付与。  
-   出力例: `🌿myrepo 🚀vim`、`📁tmp 🚀go`
+   `│ 🚀<cmd>` をコマンド枠として付与。  
+   出力例: `🌿myrepo │ 🚀vim`、`📁tmp │ 🚀go`
 
 ### ファイル別の役割
 

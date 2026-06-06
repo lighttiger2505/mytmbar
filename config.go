@@ -20,6 +20,7 @@ type Icons struct {
 	Repo           string `toml:"repo"`
 	WorktreeBranch string `toml:"worktree_branch"`
 	Directory      string `toml:"directory"`
+	Separator      string `toml:"separator"`
 	Command        string `toml:"command"`
 	Claude         string `toml:"claude"`
 	StateIdle      string `toml:"state_idle"`
@@ -49,6 +50,7 @@ func defaultConfig() *Config {
 			Repo:           "🌿",
 			WorktreeBranch: "🌲",
 			Directory:      "📁",
+			Separator:      "│",
 			Command:        "🚀",
 			Claude:         "🤖",
 			StateIdle:      "⌛",

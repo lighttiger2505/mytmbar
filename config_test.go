@@ -31,6 +31,11 @@ func TestDefaultConfig(t *testing.T) {
 		t.Errorf("Icons.Directory = %q, want 📁", cfg.Icons.Directory)
 	}
 
+	// separator
+	if cfg.Icons.Separator != "│" {
+		t.Errorf("Icons.Separator = %q, want │", cfg.Icons.Separator)
+	}
+
 	// command/claude icons
 	if cfg.Icons.Command != "🚀" {
 		t.Errorf("Icons.Command = %q, want 🚀", cfg.Icons.Command)
