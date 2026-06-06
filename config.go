@@ -1,10 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/BurntSushi/toml"
+	"github.com/urfave/cli/v2"
 )
 
 // Lengths holds maximum display lengths for each element.
@@ -89,6 +93,48 @@ func LoadConfig() *Config {
 	// Unmarshal into the pre-filled default; only present keys are overwritten.
 	_ = toml.Unmarshal(data, cfg)
 	return cfg
+}
+
+func configCommand() *cli.Command {
+	return &cli.Command{
+		Name:  "config",
+		Usage: "manage the configuration file",
+		Subcommands: []*cli.Command{
+			{
+				Name:   "edit",
+				Usage:  "open the config file in $EDITOR",
+				Action: runConfigEdit,
+			},
+		},
+	}
+}
+
+func runConfigEdit(_ *cli.Context) error {
+	path := configPath()
+	if path == "" {
+		return fmt.Errorf("cannot determine config path")
+	}
+	// Create the parent directory; the editor creates the file itself on save.
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return err
+	}
+	editor := resolveEditor()
+	// $EDITOR may carry arguments (e.g. "code --wait"); split into argv.
+	parts := strings.Fields(editor)
+	args := append(parts[1:], path)
+	cmd := exec.Command(parts[0], args...)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
+}
+
+// resolveEditor returns $EDITOR, falling back to vi when unset.
+func resolveEditor() string {
+	if e := os.Getenv("EDITOR"); e != "" {
+		return e
+	}
+	return "vi"
 }
 
 // configPath returns the path to the config file, respecting XDG_CONFIG_HOME.

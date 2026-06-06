@@ -195,6 +195,27 @@ short = true
 	})
 }
 
+func TestResolveEditor(t *testing.T) {
+	tests := []struct {
+		name   string
+		editor string
+		want   string
+	}{
+		{"EDITOR set", "nvim", "nvim"},
+		{"EDITOR with args", "code --wait", "code --wait"},
+		{"EDITOR unset falls back to vi", "", "vi"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Setenv("EDITOR", tt.editor)
+			got := resolveEditor()
+			if got != tt.want {
+				t.Errorf("resolveEditor() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestConfigPath(t *testing.T) {
 	t.Run("XDG_CONFIG_HOME set", func(t *testing.T) {
 		t.Setenv("XDG_CONFIG_HOME", "/tmp/xdg")

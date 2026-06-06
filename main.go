@@ -13,6 +13,7 @@ func main() {
 		Usage: "tmux window status generator",
 		Commands: []*cli.Command{
 			windowCommand(),
+			configCommand(),
 		},
 	}
 	if err := app.Run(os.Args); err != nil {
