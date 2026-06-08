@@ -104,7 +104,7 @@ func isClaude(title, cmd string) bool {
 }
 
 func mayBeClaudeProcess(cmd string) bool {
-	return cmd == "claude" || claudeVersionPattern.MatchString(cmd)
+	return cmd == "claude" || cmd == "lbox" || claudeVersionPattern.MatchString(cmd)
 }
 
 func mayBeClaudeTitle(title string) bool {

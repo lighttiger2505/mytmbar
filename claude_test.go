@@ -303,6 +303,8 @@ func TestIsClaude(t *testing.T) {
 		{"zsh with no claude title", "zsh", "zsh", false},
 		{"claude cmd but no claude title", "just a title", "claude", false},
 		{"spinner title but zsh cmd", "✢ Clauding…", "zsh", false},
+		{"lbox cmd with idle title", "✳ claude ~/foo", "lbox", true},
+		{"lbox cmd but no claude title", "just a title", "lbox", false},
 	}
 
 	for _, tt := range tests {
