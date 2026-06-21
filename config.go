@@ -48,6 +48,11 @@ type Debug struct {
 	States  []string `toml:"states"` // filter by state name; empty means all states
 }
 
+// Error holds error-log settings.
+type Error struct {
+	File string `toml:"file"` // override path; empty means default
+}
+
 // Claude holds Claude-detection settings.
 type Claude struct {
 	Commands []string `toml:"commands"` // extra process names treated as Claude
@@ -59,6 +64,7 @@ type Config struct {
 	Icons   Icons   `toml:"icons"`
 	Display Display `toml:"display"`
 	Debug   Debug   `toml:"debug"`
+	Error   Error   `toml:"error"`
 	Claude  Claude  `toml:"claude"`
 }
 
@@ -76,6 +82,9 @@ func defaultConfig() *Config {
 		Debug: Debug{
 			Enabled: false,
 			File:    "",
+		},
+		Error: Error{
+			File: "",
 		},
 		Claude: Claude{
 			Commands: []string{"lbox"},
@@ -187,4 +196,22 @@ func debugLogPath(cfg *Config) string {
 		dir = filepath.Join(home, ".local", "state")
 	}
 	return filepath.Join(dir, "mytmbar", "debug.log")
+}
+
+// errorLogPath returns the path to the error log file.
+// When cfg.Error.File is set it is returned as-is; otherwise the default is
+// $XDG_STATE_HOME/mytmbar/error.log (falling back to ~/.local/state).
+func errorLogPath(cfg *Config) string {
+	if cfg.Error.File != "" {
+		return cfg.Error.File
+	}
+	dir := os.Getenv("XDG_STATE_HOME")
+	if dir == "" {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return ""
+		}
+		dir = filepath.Join(home, ".local", "state")
+	}
+	return filepath.Join(dir, "mytmbar", "error.log")
 }
