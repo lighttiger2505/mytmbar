@@ -66,6 +66,9 @@ func generateContent(flags *windowFlags, cfg *Config) (string, error) {
 		}
 		claudePart := cfg.Icons.Claude + label
 		if content, err := capturePane(flags.paneID); err == nil && content != "" {
+			if cfg.Debug.Enabled {
+				saveClaudeDebug(flags.paneID, content, cfg)
+			}
 			claudePart = claudeWindowStatus(content, cfg)
 		}
 		return fmt.Sprintf("%s %s %s", status, cfg.Icons.Separator, claudePart), nil

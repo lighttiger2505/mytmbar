@@ -41,11 +41,18 @@ type Display struct {
 	Short bool `toml:"short"`
 }
 
+// Debug holds debug-output settings.
+type Debug struct {
+	Enabled bool   `toml:"enabled"`
+	File    string `toml:"file"` // override path; empty means default
+}
+
 // Config is the top-level configuration structure.
 type Config struct {
 	Lengths Lengths `toml:"lengths"`
 	Icons   Icons   `toml:"icons"`
 	Display Display `toml:"display"`
+	Debug   Debug   `toml:"debug"`
 }
 
 // defaultConfig returns a Config populated with the built-in defaults.
@@ -58,6 +65,10 @@ func defaultConfig() *Config {
 		},
 		Display: Display{
 			Short: false,
+		},
+		Debug: Debug{
+			Enabled: false,
+			File:    "",
 		},
 		Icons: Icons{
 			Repo:           "🌿",
@@ -148,4 +159,22 @@ func configPath() string {
 		dir = filepath.Join(home, ".config")
 	}
 	return filepath.Join(dir, "mytmbar", "config.toml")
+}
+
+// debugLogPath returns the path to the debug log file.
+// When cfg.Debug.File is set it is returned as-is; otherwise the default is
+// $XDG_STATE_HOME/mytmbar/debug.log (falling back to ~/.local/state).
+func debugLogPath(cfg *Config) string {
+	if cfg.Debug.File != "" {
+		return cfg.Debug.File
+	}
+	dir := os.Getenv("XDG_STATE_HOME")
+	if dir == "" {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return ""
+		}
+		dir = filepath.Join(home, ".local", "state")
+	}
+	return filepath.Join(dir, "mytmbar", "debug.log")
 }

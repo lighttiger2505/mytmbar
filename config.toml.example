@@ -49,3 +49,15 @@
 # mode_plan     = "📋"   # Claude is in plan mode
 # mode_accept   = "✏️"   # Claude is in accept-edits mode
 # mode_auto     = "🔄"   # Claude is in auto mode
+
+# ---------------------------------------------------------------------------
+# [debug]
+# Save captured Claude pane text and the parsed status to a log file.
+# Useful for diagnosing state-detection issues. Disabled by default.
+# The log file grows indefinitely; remove it manually when no longer needed.
+# Default log path: $XDG_STATE_HOME/mytmbar/debug.log
+#                   (~/.local/state/mytmbar/debug.log when XDG_STATE_HOME is unset)
+# ---------------------------------------------------------------------------
+# [debug]
+# enabled = false   # Set to true to enable debug logging
+# file    = ""      # Override the log file path; empty means use the default
