@@ -14,6 +14,7 @@ func main() {
 		Commands: []*cli.Command{
 			windowCommand(),
 			configCommand(),
+			versionCommand(),
 		},
 	}
 	if err := app.Run(os.Args); err != nil {
