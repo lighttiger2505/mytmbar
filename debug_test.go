@@ -171,6 +171,104 @@ func TestSaveClaudeDebug_StateFilter(t *testing.T) {
 	}
 }
 
+func TestSaveClaudeDebug_SkipConsecutiveDuplicate(t *testing.T) {
+	content1 := "✳ Claude\n❯ "
+	content2 := "· Doing something... (3s · esc to interrupt)"
+
+	t.Run("same content twice is written only once", func(t *testing.T) {
+		dir := t.TempDir()
+		logPath := filepath.Join(dir, "debug.log")
+		cfg := defaultConfig()
+		cfg.Debug.Enabled = true
+		cfg.Debug.File = logPath
+
+		saveClaudeDebug("%0", content1, cfg)
+		saveClaudeDebug("%0", content1, cfg) // duplicate — should be skipped
+
+		data, err := os.ReadFile(logPath)
+		if err != nil {
+			t.Fatalf("log file not found: %v", err)
+		}
+		// Each header line is "===== ... =====" so each block contributes 2 occurrences of "=====".
+		count := strings.Count(string(data), "=====")
+		if count != 2 {
+			t.Errorf("expected 2 (1 block × 2 markers), got %d:\n%s", count, string(data))
+		}
+	})
+
+	t.Run("different content after duplicate is written", func(t *testing.T) {
+		dir := t.TempDir()
+		logPath := filepath.Join(dir, "debug.log")
+		cfg := defaultConfig()
+		cfg.Debug.Enabled = true
+		cfg.Debug.File = logPath
+
+		saveClaudeDebug("%0", content1, cfg)
+		saveClaudeDebug("%0", content1, cfg) // skipped
+		saveClaudeDebug("%0", content2, cfg) // different — must be written
+
+		data, err := os.ReadFile(logPath)
+		if err != nil {
+			t.Fatalf("log file not found: %v", err)
+		}
+		count := strings.Count(string(data), "=====")
+		if count != 4 {
+			t.Errorf("expected 4 (2 blocks × 2 markers), got %d:\n%s", count, string(data))
+		}
+	})
+
+	t.Run("non-consecutive same content is written again", func(t *testing.T) {
+		dir := t.TempDir()
+		logPath := filepath.Join(dir, "debug.log")
+		cfg := defaultConfig()
+		cfg.Debug.Enabled = true
+		cfg.Debug.File = logPath
+
+		saveClaudeDebug("%0", content1, cfg)
+		saveClaudeDebug("%0", content2, cfg) // different
+		saveClaudeDebug("%0", content1, cfg) // same as first, but not consecutive — must be written
+
+		data, err := os.ReadFile(logPath)
+		if err != nil {
+			t.Fatalf("log file not found: %v", err)
+		}
+		count := strings.Count(string(data), "=====")
+		if count != 6 {
+			t.Errorf("expected 6 (3 blocks × 2 markers), got %d:\n%s", count, string(data))
+		}
+	})
+
+	t.Run("dedup is scoped per pane", func(t *testing.T) {
+		dir := t.TempDir()
+		logPath := filepath.Join(dir, "debug.log")
+		cfg := defaultConfig()
+		cfg.Debug.Enabled = true
+		cfg.Debug.File = logPath
+
+		// %0 writes content1, %1 writes same content1 (different pane — must write),
+		// then %0 writes content1 again (duplicate for %0 — must skip).
+		saveClaudeDebug("%0", content1, cfg)
+		saveClaudeDebug("%1", content1, cfg) // different pane — written
+		saveClaudeDebug("%0", content1, cfg) // duplicate for %0 — skipped
+
+		data, err := os.ReadFile(logPath)
+		if err != nil {
+			t.Fatalf("log file not found: %v", err)
+		}
+		body := string(data)
+		count := strings.Count(body, "=====")
+		if count != 4 {
+			t.Errorf("expected 4 (2 blocks × 2 markers), got %d:\n%s", count, body)
+		}
+		if !strings.Contains(body, "pane=%0") {
+			t.Errorf("log does not contain pane=%%0:\n%s", body)
+		}
+		if !strings.Contains(body, "pane=%1") {
+			t.Errorf("log does not contain pane=%%1:\n%s", body)
+		}
+	})
+}
+
 func TestSaveClaudeDebug_Append(t *testing.T) {
 	dir := t.TempDir()
 	logPath := filepath.Join(dir, "debug.log")
