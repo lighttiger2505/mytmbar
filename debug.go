@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -11,6 +12,21 @@ import (
 // and its parsed Claude status to the configured log file.
 // All errors are silently ignored to avoid breaking the status-bar output.
 func saveClaudeDebug(paneID, content string, cfg *Config) {
+	status := parseClaudeStatus(content)
+	if len(cfg.Debug.States) > 0 {
+		stateStr := status.State.String()
+		matched := false
+		for _, s := range cfg.Debug.States {
+			if strings.EqualFold(s, stateStr) {
+				matched = true
+				break
+			}
+		}
+		if !matched {
+			return
+		}
+	}
+
 	path := debugLogPath(cfg)
 	if path == "" {
 		return
@@ -23,8 +39,6 @@ func saveClaudeDebug(paneID, content string, cfg *Config) {
 		return
 	}
 	defer func() { _ = f.Close() }()
-
-	status := parseClaudeStatus(content)
 	header := fmt.Sprintf("===== %s pane=%s state=%s mode=%s =====\n",
 		time.Now().Format(time.RFC3339),
 		paneID,

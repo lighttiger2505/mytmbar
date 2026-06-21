@@ -61,3 +61,15 @@
 # [debug]
 # enabled = false   # Set to true to enable debug logging
 # file    = ""      # Override the log file path; empty means use the default
+# states  = []      # Filter by state name (case-insensitive). Empty means log all states.
+#                   # Valid values: "Idle", "Running", "Waiting", "Unknown"
+#                   # Example: states = ["Idle", "Unknown"]
+
+# ---------------------------------------------------------------------------
+# [claude]
+# Extra process names to treat as Claude (in addition to the built-in
+# "claude" and version-number detection). "lbox" is included by default.
+# Setting this key REPLACES the default list, so keep "lbox" if you still want it.
+# ---------------------------------------------------------------------------
+# [claude]
+# commands = ["lbox"]   # e.g. ["lbox", "mybot"]

@@ -43,8 +43,14 @@ type Display struct {
 
 // Debug holds debug-output settings.
 type Debug struct {
-	Enabled bool   `toml:"enabled"`
-	File    string `toml:"file"` // override path; empty means default
+	Enabled bool     `toml:"enabled"`
+	File    string   `toml:"file"`   // override path; empty means default
+	States  []string `toml:"states"` // filter by state name; empty means all states
+}
+
+// Claude holds Claude-detection settings.
+type Claude struct {
+	Commands []string `toml:"commands"` // extra process names treated as Claude
 }
 
 // Config is the top-level configuration structure.
@@ -53,6 +59,7 @@ type Config struct {
 	Icons   Icons   `toml:"icons"`
 	Display Display `toml:"display"`
 	Debug   Debug   `toml:"debug"`
+	Claude  Claude  `toml:"claude"`
 }
 
 // defaultConfig returns a Config populated with the built-in defaults.
@@ -69,6 +76,9 @@ func defaultConfig() *Config {
 		Debug: Debug{
 			Enabled: false,
 			File:    "",
+		},
+		Claude: Claude{
+			Commands: []string{"lbox"},
 		},
 		Icons: Icons{
 			Repo:           "🌿",

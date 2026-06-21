@@ -115,6 +115,62 @@ func TestSaveClaudeDebug(t *testing.T) {
 	}
 }
 
+func TestSaveClaudeDebug_StateFilter(t *testing.T) {
+	idleContent := "✳ Claude\n❯ "
+	runningContent := "· Doing something... (3s · esc to interrupt)"
+
+	tests := []struct {
+		name         string
+		content      string
+		filterStates []string
+		wantWritten  bool
+	}{
+		{
+			name:         "idle passes when idle is in filter",
+			content:      idleContent,
+			filterStates: []string{"Idle", "Unknown"},
+			wantWritten:  true,
+		},
+		{
+			name:         "running is dropped when not in filter",
+			content:      runningContent,
+			filterStates: []string{"Idle", "Unknown"},
+			wantWritten:  false,
+		},
+		{
+			name:         "case-insensitive match works",
+			content:      idleContent,
+			filterStates: []string{"idle", "unknown"},
+			wantWritten:  true,
+		},
+		{
+			name:         "empty filter logs all states",
+			content:      runningContent,
+			filterStates: nil,
+			wantWritten:  true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dir := t.TempDir()
+			logPath := filepath.Join(dir, "debug.log")
+			cfg := defaultConfig()
+			cfg.Debug.Enabled = true
+			cfg.Debug.File = logPath
+			cfg.Debug.States = tt.filterStates
+
+			saveClaudeDebug("%0", tt.content, cfg)
+
+			_, err := os.Stat(logPath)
+			exists := err == nil
+			if exists != tt.wantWritten {
+				t.Errorf("log file exists=%v, want %v", exists, tt.wantWritten)
+			}
+		})
+	}
+}
+
 func TestSaveClaudeDebug_Append(t *testing.T) {
 	dir := t.TempDir()
 	logPath := filepath.Join(dir, "debug.log")

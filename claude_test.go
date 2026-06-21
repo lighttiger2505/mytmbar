@@ -307,9 +307,36 @@ func TestIsClaude(t *testing.T) {
 		{"lbox cmd but no claude title", "just a title", "lbox", false},
 	}
 
+	cfg := defaultConfig()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := isClaude(tt.title, tt.cmd)
+			got := isClaude(tt.title, tt.cmd, cfg)
+			if got != tt.want {
+				t.Errorf("isClaude(%q, %q) = %v, want %v", tt.title, tt.cmd, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIsClaudeCustomCommand(t *testing.T) {
+	cfg := defaultConfig()
+	cfg.Claude.Commands = []string{"lbox", "mybot"}
+
+	tests := []struct {
+		name  string
+		title string
+		cmd   string
+		want  bool
+	}{
+		{"custom cmd with idle title", "✳ claude ~/foo", "mybot", true},
+		{"custom cmd but no claude title", "just a title", "mybot", false},
+		{"lbox still works", "✳ claude ~/foo", "lbox", true},
+		{"unlisted cmd", "✳ claude ~/foo", "node", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := isClaude(tt.title, tt.cmd, cfg)
 			if got != tt.want {
 				t.Errorf("isClaude(%q, %q) = %v, want %v", tt.title, tt.cmd, got, tt.want)
 			}

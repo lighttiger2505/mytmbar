@@ -99,12 +99,12 @@ var claudeWaitingPatterns = []string{
 
 var claudeRunningSpinners = []rune{'✢', '✽', '✶', '✻', '·'}
 
-func isClaude(title, cmd string) bool {
-	return mayBeClaudeProcess(cmd) && mayBeClaudeTitle(title)
+func isClaude(title, cmd string, cfg *Config) bool {
+	return mayBeClaudeProcess(cmd, cfg) && mayBeClaudeTitle(title)
 }
 
-func mayBeClaudeProcess(cmd string) bool {
-	return cmd == "claude" || cmd == "lbox" || claudeVersionPattern.MatchString(cmd)
+func mayBeClaudeProcess(cmd string, cfg *Config) bool {
+	return cmd == "claude" || claudeVersionPattern.MatchString(cmd) || slices.Contains(cfg.Claude.Commands, cmd)
 }
 
 func mayBeClaudeTitle(title string) bool {

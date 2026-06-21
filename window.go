@@ -59,7 +59,7 @@ func generateContent(flags *windowFlags, cfg *Config) (string, error) {
 	}
 
 	// Claude takes the command slot; never show the command icon for claude.
-	if isClaude(flags.title, flags.cmd) || (flags.panePID > 0 && hasAgentChild(flags.panePID)) {
+	if isClaude(flags.title, flags.cmd, cfg) || (flags.panePID > 0 && hasAgentChild(flags.panePID, cfg)) {
 		label := "Claude"
 		if cfg.Display.Short {
 			label = "CC"
@@ -82,7 +82,7 @@ func generateContent(flags *windowFlags, cfg *Config) (string, error) {
 	return fmt.Sprintf("%s %s %s%s", status, cfg.Icons.Separator, cfg.Icons.Command, truncate(flags.cmd, cfg.Lengths.Command)), nil
 }
 
-func hasAgentChild(pid int) bool {
+func hasAgentChild(pid int, cfg *Config) bool {
 	children, err := process.NewProcess(int32(pid))
 	if err != nil {
 		return false
@@ -96,7 +96,7 @@ func hasAgentChild(pid int) bool {
 		if err != nil {
 			continue
 		}
-		if name == "claude" || mayBeClaudeProcess(name) {
+		if mayBeClaudeProcess(name, cfg) {
 			return true
 		}
 	}
