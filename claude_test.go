@@ -215,6 +215,16 @@ Enter to select · ↑/↓ to navigate · Esc to cancel`,
 			wantState: ClaudeStateIdle,
 		},
 		{
+			name:      "Running with time only (no dot separator)",
+			content:   `✶ Working… (1m 46s)`,
+			wantState: ClaudeStateRunning,
+		},
+		{
+			name:      "Running with time only single unit",
+			content:   `✶ Working… (30s)`,
+			wantState: ClaudeStateRunning,
+		},
+		{
 			name:      "Running with ASCII * spinner and token info",
 			content:   `* Working… (14s · ↑ 592 tokens)`,
 			wantState: ClaudeStateRunning,

@@ -73,11 +73,12 @@ type ClaudeStatus struct {
 }
 
 var (
-	claudeVersionPattern           = regexp.MustCompile(`^\d+\.\d+`)
-	claudeRunningPattern           = regexp.MustCompile(`(?m)^[·*∗✢✳✶✻✽]\s+.+?…?\s*\([^)]*·\s*((?:\d+[smh]\s*)+)`)
-	claudeRunningPatternTimeFirst  = regexp.MustCompile(`(?m)^[·*∗✢✳✶✻✽]\s+.+?…?\s*\(((?:\d+[smh]\s*)+)\s*·`)
-	claudeRunningFallbackPattern   = regexp.MustCompile(`(?m)^[·*∗✢✳✶✻✽]\s+.+?…?\s*\((esc|ctrl\+c) to interrupt`)
-	claudeEscToInterruptEndPattern = regexp.MustCompile(`(?m)·\s*esc to interrupt(\s|·|$)`)
+	claudeVersionPattern            = regexp.MustCompile(`^\d+\.\d+`)
+	claudeRunningPattern            = regexp.MustCompile(`(?m)^[·*∗✢✳✶✻✽]\s+.+?…?\s*\([^)]*·\s*((?:\d+[smh]\s*)+)`)
+	claudeRunningPatternTimeFirst   = regexp.MustCompile(`(?m)^[·*∗✢✳✶✻✽]\s+.+?…?\s*\(((?:\d+[smh]\s*)+)\s*·`)
+	claudeRunningPatternTimeOnly    = regexp.MustCompile(`(?m)^[·*∗✢✳✶✻✽]\s+.+?\s*\(\s*(?:\d+[smh]\s*)+\)`)
+	claudeRunningFallbackPattern    = regexp.MustCompile(`(?m)^[·*∗✢✳✶✻✽]\s+.+?…?\s*\((esc|ctrl\+c) to interrupt`)
+	claudeEscToInterruptEndPattern  = regexp.MustCompile(`(?m)·\s*esc to interrupt(\s|·|$)`)
 	claudeAutoModePattern          = regexp.MustCompile(`⏵⏵\s+auto\s+mode\s+on`)
 	claudePlanModePattern          = regexp.MustCompile(`⏸\s+plan\s+mode\s+on`)
 	claudeAcceptEditsPattern       = regexp.MustCompile(`⏵⏵\s+accept\s+edits\s+on`)
@@ -188,6 +189,7 @@ func parseClaudeStatus(content string) ClaudeStatus {
 
 	isRunning := claudeRunningPattern.MatchString(combined) ||
 		claudeRunningPatternTimeFirst.MatchString(combined) ||
+		claudeRunningPatternTimeOnly.MatchString(combined) ||
 		claudeRunningFallbackPattern.MatchString(combined) ||
 		claudeEscToInterruptEndPattern.MatchString(combined)
 
