@@ -215,6 +215,21 @@ Enter to select · ↑/↓ to navigate · Esc to cancel`,
 			wantState: ClaudeStateIdle,
 		},
 		{
+			name:      "Running with ASCII * spinner and token info",
+			content:   `* Working… (14s · ↑ 592 tokens)`,
+			wantState: ClaudeStateRunning,
+		},
+		{
+			name:      "Running with ASCII * spinner and still thinking",
+			content:   `* Working… (41m 11s · ↓ 87.7k tokens · still thinking)`,
+			wantState: ClaudeStateRunning,
+		},
+		{
+			name:      "Running with ASCII * spinner and thinking only",
+			content:   `* Working… (4s · thinking)`,
+			wantState: ClaudeStateRunning,
+		},
+		{
 			name: "Unknown state",
 			content: `Some random output
 without any recognizable pattern`,
