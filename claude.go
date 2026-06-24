@@ -79,6 +79,7 @@ var (
 	claudeRunningPatternTimeOnly    = regexp.MustCompile(`(?m)^[·*∗✢✳✶✻✽]\s+.+?\s*\(\s*(?:\d+[smh]\s*)+\)`)
 	claudeRunningFallbackPattern    = regexp.MustCompile(`(?m)^[·*∗✢✳✶✻✽]\s+.+?…?\s*\((esc|ctrl\+c) to interrupt`)
 	claudeEscToInterruptEndPattern  = regexp.MustCompile(`(?m)·\s*esc to interrupt(\s|·|$)`)
+	claudeRunningPatternSpinnerOnly = regexp.MustCompile(`(?m)^[·*∗✢✳✶✻✽]\s+.+?…`)
 	claudeAutoModePattern          = regexp.MustCompile(`⏵⏵\s+auto\s+mode\s+on`)
 	claudePlanModePattern          = regexp.MustCompile(`⏸\s+plan\s+mode\s+on`)
 	claudeAcceptEditsPattern       = regexp.MustCompile(`⏵⏵\s+accept\s+edits\s+on`)
@@ -191,7 +192,8 @@ func parseClaudeStatus(content string) ClaudeStatus {
 		claudeRunningPatternTimeFirst.MatchString(combined) ||
 		claudeRunningPatternTimeOnly.MatchString(combined) ||
 		claudeRunningFallbackPattern.MatchString(combined) ||
-		claudeEscToInterruptEndPattern.MatchString(combined)
+		claudeEscToInterruptEndPattern.MatchString(combined) ||
+		claudeRunningPatternSpinnerOnly.MatchString(combined)
 
 	isWaiting := false
 	for _, kw := range claudeWaitingPatterns {

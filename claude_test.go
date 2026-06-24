@@ -240,6 +240,16 @@ Enter to select · ↑/↓ to navigate · Esc to cancel`,
 			wantState: ClaudeStateRunning,
 		},
 		{
+			name:      "Running with bare spinner and no time info",
+			content:   `* Working…`,
+			wantState: ClaudeStateRunning,
+		},
+		{
+			name:      "Running with Unicode spinner and no time info",
+			content:   `✶ Working…`,
+			wantState: ClaudeStateRunning,
+		},
+		{
 			name: "Unknown state",
 			content: `Some random output
 without any recognizable pattern`,
